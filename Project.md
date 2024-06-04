@@ -145,9 +145,6 @@ FROM family_history_count;
 | No             | 492         | 365              | 74                  |
 
 
-## Results
-The analysis aims to provide insights into mental health treatment seeking behavior among survey respondents. Initial findings suggest variations in treatment seeking behavior across different demographics and employment characteristics.
-
 ## Next Steps
 - Refine and expand the analysis to include additional variables and explore deeper insights.
 - Document the analysis process and results comprehensively.
