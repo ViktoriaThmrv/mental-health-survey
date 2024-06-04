@@ -140,10 +140,44 @@ FROM family_history_count;
 
 ### The Output
 | family_history | total_count | treatment_count | percentage_treated |
-|----------------|-------------|-----------------|---------------------|
-| Yes            | 767         | 272              | 35                  |
-| No             | 492         | 365              | 74                  |
+|----------------|-------------|-----------------|--------------------|
+| Yes            | 767         | 272             | 35                 |
+| No             | 492         | 365             | 74                 |
 
+
+### Analysis of Anonymity and Help-Seeking Behavior for Mental Health
+This SQL query examines whether the availability of anonymity influences individuals' likelihood of seeking help for mental health issues. It calculates the percentage of individuals who sought help when anonymity was provided compared to those who did not have anonymity.
+
+### Query explaination
+1. Subquery: It groups the survey data by whether anonymity was offered or not, counting how many people there are in each group (total) and how many of them sought help (seek_help_yes).
+2. Outer SELECT Statement: It uses the results from the subquery to calculate the percentage of people who sought help in each group.
+
+### SQL query
+```sql
+SELECT 
+    anonymity,
+    total,
+    seek_help_yes,
+    (seek_help_yes * 100) / total AS percentage_seek_help
+FROM (
+    SELECT 
+        anonymity,
+        COUNT(*) AS total,
+        SUM(CASE WHEN seek_help = 'Yes' THEN 1 ELSE 0 END) AS seek_help_yes
+    FROM 
+        mental_health_survey
+    GROUP BY 
+        anonymity
+) AS anon_data;
+```
+
+### The Output
+
+| annonymity | total | seek_help_yes | percentage_seek_help |
+|------------|-------|---------------|----------------------|
+| Yes        |   375 |           147 |                   39 |
+| No         |    65 |             6 |                    9 |
+| Don't know |   819 |            97 |                   11 |
 
 ## Next Steps
 - Refine and expand the analysis to include additional variables and explore deeper insights.
