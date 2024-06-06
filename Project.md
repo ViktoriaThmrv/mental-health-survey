@@ -96,27 +96,33 @@ mental_health_survey;
 |      41 |  
 
 ### 3. Counting self-employed respondents experiencing work interference often
-This query counts the number of self-employed respondents who reported experiencing work interference often in the `survey_data` table.
+This query cuonts the occurrences of work interference reported as often by both self-employed and non-self-employed respondents.
 
 ### Query Explanation
-The `COUNT(*)` function counts the number of rows that meet the specified conditions, with the WHERE clause filtering the rows where the respondents are self-employed `Yes` and report often experiencing work interference.
+The FILTER clause is used to selectively count only the rows that meet the specified condition within the `COUNT()` function. It ensures that only instances where work_interfere is marked as `Often` are included in the count, while other instances are excluded.
 
 ### SQL Query
 ```sql
-SELECT COUNT(*) as self_employed_interference
-FROM survey_data
-WHERE self_employed = 'Yes' AND work_interfere = 'Often';
+SELECT
+    self_employed,
+    COUNT(*) FILTER (WHERE work_interfere = 'Often') AS interference_count
+FROM
+    mental_health_survey
+GROUP BY
+    self_employed;
 ```
 ### The Output
-| self_employed_interference | 
-|----------------------------|
-|                         28 |  
+| self-employed | interference_count |
+|---------------|--------------------|
+|            No |                114 | 
+|            NA |                  2 | 
+|           Yes |                 28 |
 
 ### 4. Total respondents with treatment
 This query counts the total number of respondents who have sought treatment for mental health issues.
 
 #### Query Explanation
-The query counts the total number of respondents who answered `Yes` to seeking treatment for mental health issues.
+It works by first filtering the rows from the `mental_health_survey` table where the `treatment` column equals `Yes`. Then, it counts the occurrences of these filtered rows using the `COUNT()` function. It assigns the result to the alias `total_respondents_with_treatment`, providing the count of respondents who reported receiving treatment for mental health issues.
 
 ```sql
 SELECT COUNT(treatment) AS total_respondents_with_treatment
@@ -133,7 +139,7 @@ WHERE treatment = 'Yes';
 The query aims to calculate the overall percentage of respondents who have sought treatment for mental health issues.
 
 #### Query Explanation
-This query uses a subquery within the SELECT statement to calculate the total number of respondents who have sought treatment for mental health issues. It then divides this count by the total number of respondents in the mental_health_survey table to determine the percentage of respondents who sought treatment.
+This query uses a subquery within the `SELECT` statement to calculate the total number of respondents who have sought treatment for mental health issues. It then divides this count by the total number of respondents in the table to determine the percentage of respondents who sought treatment.
 
 ```sql
 SELECT 
@@ -150,7 +156,7 @@ FROM mental_health_survey;
 The query aims to calculate the overall percentage of respondents who have sought treatment for mental health issues.
 
 #### Query Explanation
-Here, we analyze the treatment rates for mental health issues across different countries represented in the `mental_health_survey table`. This calculates the treatment rate for each country and ranks them based on their treatment rates.
+Here, we analyze the treatment rates for mental health issues across different countries represented in the table. This calculates the treatment rate for each country and ranks them based on their treatment rates.
 
 ```sql
 SELECT 
@@ -212,12 +218,10 @@ GROUP BY
 
 
 ### 8. Analysis of Family History and Treatment Seeking Behavior for Mental Health
-This SQL query examines the correlation between having a family history of mental health issues and the likelihood of seeking treatment. It calculates the percentage of individuals who have sought treatment among those with and without a family history of mental health issues.
+Here, we examine the correlation between having a family history of mental health issues and the likelihood of seeking treatment. The query calculates the percentage of individuals who have sought treatment among those with and without a family history of mental health issues.
 
 ### Query Explanation
-The query has two parts:
-1. Common Table Expression (CTE) - Aggregates data by family_history and calculates the total number of responses total_count and the number of individuals who sought treatment treatment_count for each group.
-2. Final SELECT Statement - Calculates the percentage of individuals who sought treatment percentage_treated for each group.
+The query comprises two main components. Firstly, it utilizes a `Common Table Expression (CTE)` to aggregate data based on family history. Within this CTE, it computes the total number of responses `total_count` and the count of individuals who sought treatment `treatment_count` for each respective group. The final `SELECT` statement calculates the percentage of individuals who sought treatment `percentage_treated` for each group, using the aggregated data from the CTE.
 
 ### SQL Query
 ```sql
@@ -248,8 +252,7 @@ FROM family_history_count;
 This SQL query examines whether the availability of anonymity influences individuals' likelihood of seeking help for mental health issues. It calculates the percentage of individuals who sought help when anonymity was provided compared to those who did not have anonymity.
 
 ### Query explaination
-1. Subquery - It groups the survey data by whether anonymity was offered or not, counting how many people there are in each group total and how many of them sought help seek_help_yes.
-2. Outer SELECT Statement - It uses the results from the subquery to calculate the percentage of people who sought help in each group.
+Firstly, the subquery groups the survey data based on whether anonymity was offered or not. Within this subquery, it counts the total number of people in each group and the number of individuals who sought help `seek_help_yes`. And secondly, the outer `SELECT` statement utilizes the results obtained from the subquery to calculate the percentage of people who sought help in each respective group.
 
 ### SQL query
 ```sql
