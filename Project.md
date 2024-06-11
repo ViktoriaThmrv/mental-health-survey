@@ -45,15 +45,16 @@ The dataset used for this analysis is stored in a PostgreSQL database. It includ
 ### 1. Data preparation and cleaning
 
 ### Standardizing Gender Values
-This query standardizes the values in the `gender` column of the mental_health_survey table to ensure consistency across the dataset. It uses pattern recognition with flexible matching to categorize gender entries into `Male`, `Female`, or `Other`. 
+This query aims to simplify the representation of gender across the dataset, thereby simplifying the analysis and interpretation of gender-related insights. By standardizing diverse gender entries into coherent categories, it enhances the dataset's coherence and usability, fostering a more structured and insightful analytical process.
 
 #### Query Explanation
-1. The LOWER(gender) function converts all gender entries to lowercase to ensure case-insensitive matching.
-2. The SIMILAR TO operator matches entries to patterns:
-- Entries that match patterns like 'm' or 'male' are set to 'Male'.
-- Entries that match patterns like 'f', 'female', or 'girl' are set to 'Female'.
-- All other entries are set to 'Other'.
+This query aims to standardize the values in the `gender` column of the `mental_health_survey` table to ensure consistency across the dataset. It starts with an update operation, adjusting the gender values based on specific patterns found in the existing data.
 
+The `CASE` statement evaluates each row's `gender` value and assigns it a standardized category. If the `gender` value contains patterns similar to 'm' or 'male', it's categorized as 'Male'. Similarly, if the `gender` value resembles 'f', 'female', or 'girl', it's categorized as 'Female'. Any other values or patterns not matching these criteria are categorized as 'Other'.
+
+After updating the `gender` column, the subsequent `SELECT` statement retrieves the updated `gender` values from the `mental_health_survey` table.
+
+### SQL Query
 ```sql
 UPDATE mental_health_survey
 SET gender = 
@@ -81,7 +82,7 @@ FROM
 This query calculates the average age of respondents in the mental_health_survey table and rounds the result to the nearest integer.
 
 ### Query Explanation
-The `ROUND()` function rounds the result of the `AVG()` function to the nearest integer and the `AVG()` function calculates the average age of all respondents in the dataset.
+Here, the `ROUND()` function rounds the result of the `AVG()` function to the nearest integer and the `AVG()` function calculates the average age of all respondents in the dataset.
 
 ### SQL Query
 ```sql
@@ -96,10 +97,10 @@ mental_health_survey;
 |      41 |  
 
 ### 3. Counting self-employed respondents experiencing work interference often
-This query cuonts the occurrences of work interference reported as often by both self-employed and non-self-employed respondents.
+This query cuonts the occurrences of work interference reported by both self-employed and non-self-employed respondents.
 
 ### Query Explanation
-The FILTER clause is used to selectively count only the rows that meet the specified condition within the `COUNT()` function. It ensures that only instances where work_interfere is marked as `Often` are included in the count, while other instances are excluded.
+For this query, the `FILTER` clause is used to selectively count only the rows that meet the specified condition within the `COUNT()` function. It ensures that only instances where `work_interfere` is marked as `Often` are included in the count, while other instances are excluded.
 
 ### SQL Query
 ```sql
@@ -122,7 +123,7 @@ GROUP BY
 This query counts the total number of respondents who have sought treatment for mental health issues.
 
 #### Query Explanation
-It works by first filtering the rows from the `mental_health_survey` table where the `treatment` column equals `Yes`. Then, it counts the occurrences of these filtered rows using the `COUNT()` function. It assigns the result to the alias `total_respondents_with_treatment`, providing the count of respondents who reported receiving treatment for mental health issues.
+This query works by first filtering the rows from the `mental_health_survey` table where the `treatment` column equals `Yes`. Then, it counts the occurrences of these filtered rows using the `COUNT()` function. It assigns the result to the alias `total_respondents_with_treatment`, providing the count of respondents who reported receiving treatment for mental health issues.
 
 ```sql
 SELECT COUNT(treatment) AS total_respondents_with_treatment
@@ -153,10 +154,14 @@ FROM mental_health_survey;
 |                          50 |
 
 ### 6. Analyzing treatment rates across different countries
-The query aims to calculate the overall percentage of respondents who have sought treatment for mental health issues.
+This query helps us understand the prevalence of mental health treatment-seeking behavior across different countries. By calculating the treatment rate for each country, we can see how many respondents sought treatment for mental health issues relative to the total number of respondents in each country.
 
 #### Query Explanation
-Here, we analyze the treatment rates for mental health issues across different countries represented in the table. This calculates the treatment rate for each country and ranks them based on their treatment rates.
+Here, the inner subquery calculates the treatment rate for each country represented in the table, which is done by grouping the data by country and counting the total number of respondents `(COUNT(*))` and the number of respondents who sought treatment `(SUM(CASE WHEN treatment = 'Yes' THEN 1 ELSE 0 END))`.
+
+Then, the treatment rate is calculated as the percentage of respondents who sought treatment `(SUM(treatment = 'Yes'))` out of the total number of respondents for each country. This calculation is expressed as `SUM(CASE WHEN treatment = 'Yes' THEN 1 ELSE 0 END) * 100 / COUNT(*)`.
+
+After the treatment rates have been calculated for each country in the subquery, the outer query selects the country and treatment rate columns from the subquery result. Then, the `RANK()` window function assigns a rank to each country based on their treatment rates. We use the `RANK()` function to order the countries by treatment rate in descending order and assign a rank to each row accordingly.
 
 ```sql
 SELECT 
@@ -195,7 +200,11 @@ FROM
 This query helps with categorizing respondents into two groups based on whether they have mental health benefits or not. It then calculates the percentage of respondents seeking treatment for mental health issues within each group.
 
 #### Query Explanation
-This SQL query uses a `CASE` statement to label respondents as 'With Benefits' or 'Without Benefits'. Within each group, it calculates the treatment percentage by averaging a conditional expression that evaluates to 1 if the respondent sought treatment "Yes" and 0 otherwise using the `AVG()` function. Multiplying the result by 100 gives the treatment percentage for each group. Finally, the `GROUP BY` clause is used to group the results by the benefit status.
+In this query, data from the `mental_health_survey` table is grouped based on whether respondents have mental health benefits `(benefits = 'Yes')` or not. For each group, the query calculates the average treatment percentage. This is achieved by averaging the value of 1 for respondents who sought treatment `(treatment = 'Yes')` and 0 for those who didn't within each group.
+
+The `CASE` statement categorizes respondents into two groups - `With Benefits` if they have mental health benefits and `Without Benefits` if they don't. For each benefit status group, the query calculates the treatment percentage by averaging the values obtained from the previous step and multiplying by 100 to express it as a percentage.
+
+The result set includes the benefit status `benefit_status` and the corresponding treatment percentage `treatment_percentage` for each group.
 
 ```sql
 SELECT 
@@ -221,7 +230,11 @@ GROUP BY
 Here, we examine the correlation between having a family history of mental health issues and the likelihood of seeking treatment. The query calculates the percentage of individuals who have sought treatment among those with and without a family history of mental health issues.
 
 ### Query Explanation
-The query comprises two main components. Firstly, it utilizes a `Common Table Expression (CTE)` to aggregate data based on family history. Within this CTE, it computes the total number of responses `total_count` and the count of individuals who sought treatment `treatment_count` for each respective group. The final `SELECT` statement calculates the percentage of individuals who sought treatment `percentage_treated` for each group, using the aggregated data from the CTE.
+In this query, the common table expression (CTE) named `family_history_count` is defined. Within this CTE, the data is grouped based on the presence or absence of a family history of mental health issues among respondents. This grouping is achieved using the `GROUP BY` clause applied to the family_history column.
+
+The main query then selects data from the CTE and includes the family history status `family_history`, the total count of respondents `total_count`, the count of respondents who sought treatment `treatment_count`, and the percentage of treated respondents out of the total count `percentage_treated`. The percentage of treated respondents is calculated by dividing the treatment count by the total count and multiplying by 100 `(treatment_count * 100) / total_count AS percentage_treated`.
+
+Practically, this query allows us to analyze the correlation between having a family history of mental health issues and the likelihood of seeking treatment. By aggregating data based on family history status and calculating the treatment percentage for each group, we can understand the impact of family history on treatment-seeking behavior.
 
 ### SQL Query
 ```sql
@@ -252,7 +265,11 @@ FROM family_history_count;
 This SQL query examines whether the availability of anonymity influences individuals' likelihood of seeking help for mental health issues. It calculates the percentage of individuals who sought help when anonymity was provided compared to those who did not have anonymity.
 
 ### Query explaination
-Firstly, the subquery groups the survey data based on whether anonymity was offered or not. Within this subquery, it counts the total number of people in each group and the number of individuals who sought help `seek_help_yes`. And secondly, the outer `SELECT` statement utilizes the results obtained from the subquery to calculate the percentage of people who sought help in each respective group.
+This query analyzes data from the `mental_health_survey` table, specifically focusing on respondents' anonymity status regarding seeking help for mental health issues. It starts by grouping the data based on anonymity status, where respondents are categorized as either having anonymity `anonymity = 'Yes'` or not. Within each group, the query calculates three key metrics.
+
+Firstly, it computes the total count of respondents `total` within each anonymity category. Then, it determines the count of respondents who feel comfortable seeking help for mental health issues `seek_help_yes` within each anonymity group.
+
+Subsequently, the query calculates the percentage of respondents who sought help `seek_help_yes` out of the total count `total` within each anonymity category. This is accomplished by dividing the count of respondents who sought help by the total count and multiplying the result by 100 to express it as a percentage.
 
 ### SQL query
 ```sql
