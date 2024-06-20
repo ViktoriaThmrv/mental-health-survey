@@ -44,7 +44,7 @@ The dataset used for this analysis is stored in a PostgreSQL database. It includ
 
 ### 1. Data preparation and cleaning
 
-### Standardizing Gender Values
+### Standardizing gender values
 This query aims to simplify the representation of gender across the dataset, thereby simplifying the analysis and interpretation of gender-related insights. By standardizing diverse gender entries into coherent categories, it enhances the dataset's coherence and usability, fostering a more structured and insightful analytical process.
 
 #### Query Explanation
@@ -76,6 +76,16 @@ FROM
 | Other    |
 | Female   |
 
+### Standardizing age values
+
+#### Query Explanation
+The dataset contains age values such as "999" which are erroneous, here, we standardize such values to be set to 'NULL'.
+
+### SQL Query
+UPDATE mental_health_survey
+SET age = NULL
+WHERE age NOT BETWEEN 0 AND 120 OR age = 999;
+
 ### Analysis
 
 ### 2. Calculating the average age
@@ -94,7 +104,10 @@ mental_health_survey;
 ### The Output
 | avg_age | 
 |---------|
-|      41 |  
+|      32 |  
+
+![image](https://github.com/ViktoriaThmrv/mental-health-survey/assets/170016973/9aab8e5c-9eba-4240-b4db-7b94b5f62864)
+
 
 ### 3. Counting self-employed respondents experiencing work interference often
 This query cuonts the occurrences of work interference reported by both self-employed and non-self-employed respondents.
