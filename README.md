@@ -1,6 +1,6 @@
 # Mental Health Survey Analysis using SQL
 
-This project involves the analysis of a mental health survey dataset exported from Kaggle using SQL. The dataset contains information about respondents' demographics, employment status, and mental health treatment seeking behavior. The aim is to explore patterns and correlations within the data to gain insights into mental health treatment trends among survey participants. 
+This project involves the analysis of a mental health survey dataset exported from Kaggle using PostgreSQL and visualization using Tableau. The dataset contains information about respondents' demographics, employment status, and mental health treatment seeking behavior. The aim is to explore patterns and correlations within the data to gain insights into mental health treatment trends among survey participants. 
 
 ## Dataset
 The dataset used in this analysis can be found on [Kaggle](https://www.kaggle.com/datasets/osmi/mental-health-in-tech-survey/code?datasetId=311&searchQuery=sql).
