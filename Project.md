@@ -1,7 +1,7 @@
 # Mental Health Survey Analysis
 
 ## Overview
-This project involves the analysis of a mental health survey dataset exported from Kaggle using PostreSQL. The dataset contains information about respondents' demographics, employment status, and mental health treatment seeking behavior. The aim is to explore patterns and correlations within the data to gain insights into mental health treatment trends among survey participants. The dataset can be found [here](https://www.kaggle.com/datasets/osmi/mental-health-in-tech-survey/code?datasetId=311&searchQuery=sql).
+This project involves the analysis of a mental health survey dataset exported from Kaggle using PostreSQL and visulaization of the data usign Tableau. The dataset contains information about respondents' demographics, employment status, and mental health treatment seeking behavior. The aim is to explore patterns and correlations within the data to gain insights into mental health treatment trends among survey participants. The dataset can be found [here](https://www.kaggle.com/datasets/osmi/mental-health-in-tech-survey/code?datasetId=311&searchQuery=sql).
 
 ## Purpose
 The primary purpose of this project is to understand the prevalence of mental health issues within the surveyed population and identify factors that may influence treatment-seeking behavior. By analyzing various demographic and workplace-related variables, the project aims to uncover patterns and correlations that can inform strategies for promoting mental health support and intervention programs in workplace settings.
@@ -106,8 +106,8 @@ mental_health_survey;
 |---------|
 |      32 |  
 
-![image](https://github.com/ViktoriaThmrv/mental-health-survey/assets/170016973/9aab8e5c-9eba-4240-b4db-7b94b5f62864)
-
+#### Tableau visualization of the average age of each gender
+![image](https://github.com/ViktoriaThmrv/mental-health-survey/assets/170016973/ba498116-12e9-490b-ad88-eb11bea86881)
 
 ### 3. Counting self-employed respondents experiencing work interference often
 This query cuonts the occurrences of work interference reported by both self-employed and non-self-employed respondents.
@@ -132,6 +132,9 @@ GROUP BY
 |            NA |                  2 | 
 |           Yes |                 28 |
 
+#### Tableau visualization of the data above
+![image](https://github.com/ViktoriaThmrv/mental-health-survey/assets/170016973/db411d8e-095a-41cf-b126-10f6a50a5888)
+
 ### 4. Total respondents with treatment
 This query counts the total number of respondents who have sought treatment for mental health issues.
 
@@ -149,22 +152,15 @@ WHERE treatment = 'Yes';
 |----------------------------------|
 |                              637 |
 
-### 5. Overall percentage of treatment seekers
-The query aims to calculate the overall percentage of respondents who have sought treatment for mental health issues.
+#### Tableau visualization of respondants who have responded with 'Yes' and those who responded with 'No'
 
-#### Query Explanation
-This query uses a subquery within the `SELECT` statement to calculate the total number of respondents who have sought treatment for mental health issues. It then divides this count by the total number of respondents in the table to determine the percentage of respondents who sought treatment.
-
-```sql
-SELECT 
-    (SELECT COUNT(treatment) FROM mental_health_survey WHERE treatment= 'Yes') *100/ COUNT(*) percentage_sought_treatment
-FROM mental_health_survey;
+### SQL query
+``` sql
+SELECT treatment, COUNT(treatment) 
+FROM mental_health_survey
+GROUP BY treatment;
 ```
-### The Output
-
-| percentage_sought_treatment | 
-|-----------------------------|
-|                          50 |
+![image](https://github.com/ViktoriaThmrv/mental-health-survey/assets/170016973/4f12e7a4-6b02-4450-a7e5-3cffd6ce773a)
 
 ### 6. Analyzing treatment rates across different countries
 This query helps us understand the prevalence of mental health treatment-seeking behavior across different countries. By calculating the treatment rate for each country, we can see how many respondents sought treatment for mental health issues relative to the total number of respondents in each country.
@@ -209,6 +205,10 @@ FROM
 |       Canada |             51 |   13 | 
 |     Bulgaria |             50 |   14 | 
 
+#### Tableau visualization by country
+
+![image](https://github.com/ViktoriaThmrv/mental-health-survey/assets/170016973/7c4c6be1-a735-4f6a-8c97-22f70c1a3298)
+
 ### 7. Analyzing treatment-seeking behavior, based on mental health benefits
 This query helps with categorizing respondents into two groups based on whether they have mental health benefits or not. It then calculates the percentage of respondents seeking treatment for mental health issues within each group.
 
@@ -225,7 +225,7 @@ SELECT
         WHEN benefits = 'Yes' THEN 'With Benefits'
         ELSE 'Without Benefits'
     END AS benefit_status,
-    AVG(CASE WHEN treatment = 'Yes' THEN 1 ELSE 0 END) * 100 AS treatment_percentage
+    ROUND(AVG(CASE WHEN treatment = 'Yes' THEN 1 ELSE 0 END) * 100, 0) AS treatment_percentage
 FROM 
     mental_health_survey
 GROUP BY 
@@ -238,6 +238,9 @@ GROUP BY
 | Without Benefits |                   42 | 
 |    With Benefits |                   63 | 
 
+#### Tableau pie chart visualization
+
+![image](https://github.com/ViktoriaThmrv/mental-health-survey/assets/170016973/8ef84519-d8b9-4dc2-86f9-2df2b8008bff)
 
 ### 8. Analysis of Family History and Treatment Seeking Behavior for Mental Health
 Here, we examine the correlation between having a family history of mental health issues and the likelihood of seeking treatment. The query calculates the percentage of individuals who have sought treatment among those with and without a family history of mental health issues.
@@ -273,6 +276,9 @@ FROM family_history_count;
 | Yes            | 767         | 272             | 35                 |
 | No             | 492         | 365             | 74                 |
 
+#### Tableau visualization
+
+![image](https://github.com/ViktoriaThmrv/mental-health-survey/assets/170016973/d16c9a72-0d30-4108-9598-a79ca08a364e)
 
 ### 9. Analysis of anonymity and help-seeking behavior for mental health
 This SQL query examines whether the availability of anonymity influences individuals' likelihood of seeking help for mental health issues. It calculates the percentage of individuals who sought help when anonymity was provided compared to those who did not have anonymity.
@@ -311,20 +317,30 @@ FROM (
 | No         |    65 |             6 |                    9 |
 | Don't know |   819 |            97 |                   11 |
 
+#### Tableau pie visualization
+
+![image](https://github.com/ViktoriaThmrv/mental-health-survey/assets/170016973/3a55f55c-0792-4ce5-8237-28e71f12915c)
+
 ## Conclusion
 
-### Demographic Trends
-The analysis revealed a diverse range of respondents in terms of age, gender, and geographical distribution, highlighting the importance of considering these factors in mental health interventions.
+The analysis of the mental health survey data has provided valuable insights into various aspects of mental health issues, treatment-seeking behavior, and factors influencing help-seeking decisions among respondents. Below are key findings derived from the data:
 
-### Employment Factors
-Workplace-related variables such as self-employment status, company size, and availability of benefits significantly influence mental health treatment-seeking behavior and perceptions.
+### Demographic Insights:
+- **Gender Distribution:** Through standardizing gender values, we found a diverse representation among respondents, categorized into 'Male', 'Female', and 'Other'.
+- **Average Age:** The average age of respondents was calculated to be approximately 32 years, highlighting the demographic profile of the survey participants.
 
-### Treatment Rates
-While approximately half of the respondents reported seeking treatment for mental health issues, disparities exist across different countries and employment settings, indicating the need for targeted interventions.
+### Workplace Factors:
+- **Self-Employment Impact:** A significant number of self-employed respondents reported frequent work interference due to mental health issues, reflecting potential challenges faced in managing mental well-being while self-employed.
 
-### Impact of Benefits
-Respondents with access to mental health benefits demonstrated higher rates of treatment-seeking behavior, underscoring the importance of employer support in facilitating mental health care access.
+### Treatment and Help-Seeking Behavior:
+- **Treatment Rates:** The analysis revealed varying treatment rates across different countries, with countries like Slovenia and Denmark showing higher treatment-seeking behavior.
+- **Effect of Benefits:** Respondents with mental health benefits were more likely to seek treatment compared to those without, underscoring the influence of accessible healthcare resources on treatment decisions.
 
-### Family History and Anonymity
-Individuals with a family history of mental health issues showed lower treatment-seeking rates, while the availability of anonymity appeared to positively influence help-seeking behavior.
+### Family History Influence:
+- **Impact of Family History:** Respondents with a family history of mental health issues were found to have a lower rate of seeking treatment compared to those without such a history. This suggests a potential barrier or stigma associated with familial mental health issues.
 
+### Anonymity and Help-Seeking:
+- **Anonymity's Role:** The availability of anonymity positively correlated with higher rates of seeking help for mental health issues, indicating that perceived confidentiality plays a crucial role in encouraging individuals to seek assistance.
+
+### Key insights:
+The findings underscore the complexity of factors influencing mental health treatment-seeking behavior, ranging from demographic considerations to workplace dynamics and access to healthcare benefits. Understanding these nuances is crucial for developing targeted interventions and support systems that effectively address barriers to seeking mental health care.
